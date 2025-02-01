@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+.MuiTableCell-root {
+  text-wrap: nowrap;
+}
