@@ -4,6 +4,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import LinearProgress from "@mui/material/LinearProgress";
 import type { Navigation } from "@toolpad/core/AppProvider";
 import { NextAppProvider } from "@toolpad/core/nextjs";
+import Image from "next/image";
 import * as React from "react";
 import "./globals.css";
 
@@ -24,7 +25,7 @@ const NAVIGATION: Navigation = [
 
 const BRANDING = {
   title: "Task Mate",
-  logo: <img src="/images/logo.webp" alt="Tasks Tracker" />,
+  logo: <Image src="/images/logo.webp" alt="Tasks Tracker" />,
 };
 
 export default function RootLayout(props: { children: React.ReactNode }) {

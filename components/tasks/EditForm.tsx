@@ -77,7 +77,7 @@ export default function EditForm() {
       (task: TaskType) => task.id === params.id
     );
     setInitialValues({ dueDate: dayjs(dueDate), ...task });
-  }, []);
+  }, [params.id]);
 
   if (!initialValues) {
     return (
