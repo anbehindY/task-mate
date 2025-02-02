@@ -30,7 +30,7 @@ pnpm build
 
 ## Getting Started
 
-To run an optimized produciton environment
+To run an optimized production environment
 
 ```
 pnpm start
