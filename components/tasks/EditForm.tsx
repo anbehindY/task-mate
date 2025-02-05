@@ -60,12 +60,10 @@ export default function EditForm() {
     enableReinitialize: true,
     validationSchema: taskSchema,
     onSubmit: (response) => {
-      const tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-      const id =
-        tasks.length > 0
-          ? (parseInt(tasks[tasks.length - 1].id) + 1).toString()
-          : "1";
-      tasks.push({ id: id, ...response });
+      let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+      tasks = tasks.map((task: TaskType) =>
+        task.id === Number(params.id) ? { id: task.id, ...response } : task
+      );
       localStorage.setItem("tasks", JSON.stringify(tasks));
       router.push("/tasks");
     },
@@ -74,7 +72,7 @@ export default function EditForm() {
   useEffect(() => {
     const storedTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
     const { id, dueDate, ...task } = storedTasks.find(
-      (task: TaskType) => task.id === params.id
+      (task: TaskType) => task.id === Number(params.id)
     );
     setInitialValues({ dueDate: dayjs(dueDate), ...task });
   }, [params.id]);
