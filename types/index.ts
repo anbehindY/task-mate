@@ -1,7 +1,7 @@
 import { Dayjs } from "dayjs";
 
 export type TaskType = {
-  id: string;
+  id: number;
   taskName: string;
   assignee: string;
   dueDate: Dayjs | null;
@@ -9,6 +9,8 @@ export type TaskType = {
   status: string;
   completed: boolean;
 };
+
+export type TaskArrayType = { tasks: Omit<TaskType, "id">[] };
 
 export type StatsCardType = {
   title: string;
