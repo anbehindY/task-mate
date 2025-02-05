@@ -39,13 +39,13 @@ export default function TasksTable() {
     setTasks(storedTasks);
   }, []);
 
-  const deleteHandler = (id: string) => {
+  const deleteHandler = (id: number) => {
     const newTasks = tasks.filter((task) => task.id !== id);
     setTasks(newTasks);
     localStorage.setItem("tasks", JSON.stringify(newTasks));
   };
 
-  const markCompletedHandler = (id: string) => {
+  const markCompletedHandler = (id: number) => {
     {
       const newTasks = tasks.map((t) => {
         if (t.id === id) {
