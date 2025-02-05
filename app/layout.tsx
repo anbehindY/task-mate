@@ -25,7 +25,9 @@ const NAVIGATION: Navigation = [
 
 const BRANDING = {
   title: "Task Mate",
-  logo: <Image src="/images/logo.webp" alt="Tasks Tracker" />,
+  logo: (
+    <Image src="/images/logo.webp" alt="Tasks Tracker" width={32} height={32} />
+  ),
 };
 
 export default function RootLayout(props: { children: React.ReactNode }) {
