@@ -53,11 +53,7 @@ export default function NewCreateForm() {
         router.push("/tasks");
       }}
     >
-      {(formikProps) => (
-        <>
-          <DynamicForm formikProps={formikProps} />
-        </>
-      )}
+      <DynamicForm />
     </Formik>
   );
 }

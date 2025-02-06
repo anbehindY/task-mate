@@ -17,13 +17,9 @@ import {
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { FieldArray, Form, FormikProps, getIn } from "formik";
+import { FieldArray, Form, getIn, useFormikContext } from "formik";
 
-type DynamicFormProps = {
-  formikProps: FormikProps<TaskArrayType>;
-};
-
-export default function DynamicForm({ formikProps }: DynamicFormProps) {
+export default function DynamicForm() {
   const {
     values,
     handleBlur,
@@ -32,7 +28,7 @@ export default function DynamicForm({ formikProps }: DynamicFormProps) {
     errors,
     setFieldValue,
     resetForm,
-  } = formikProps;
+  } = useFormikContext<TaskArrayType>();
 
   return (
     <Form className="w-full mt-4 relative">
