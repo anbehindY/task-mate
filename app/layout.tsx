@@ -26,7 +26,7 @@ const NAVIGATION: Navigation = [
 const BRANDING = {
   title: "Task Mate",
   logo: (
-    <Image src="/images/logo.webp" alt="Tasks Tracker" width={32} height={32} />
+    <Image src="/images/logo.webp" alt="Tasks Tracker" width={48} height={56} />
   ),
 };
 
