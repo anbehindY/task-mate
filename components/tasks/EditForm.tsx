@@ -1,7 +1,7 @@
 "use client";
 
+import { SnackbarContext } from "@/components/provider/SnackbarProvider";
 import { TaskType } from "@/types";
-import { SnackbarContext } from "@/utils/snackbarProvider";
 import {
   Button,
   CircularProgress,

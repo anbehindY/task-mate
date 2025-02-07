@@ -1,6 +1,6 @@
 "use client";
 
-import { SnackbarContext } from "@/utils/snackbarProvider";
+import { SnackbarContext } from "@/components/provider/SnackbarProvider";
 import { Alert, Snackbar } from "@mui/material";
 import { useContext } from "react";
 
