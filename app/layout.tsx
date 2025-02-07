@@ -8,6 +8,8 @@ import Image from "next/image";
 import * as React from "react";
 import "./globals.css";
 
+import CustomSnackbar from "@/components/shared/CustomSnackbar";
+import { SnackbarProvider } from "@/utils/snackbarProvider";
 import theme from "../theme";
 
 const NAVIGATION: Navigation = [
@@ -41,7 +43,10 @@ export default function RootLayout(props: { children: React.ReactNode }) {
               branding={BRANDING}
               theme={theme}
             >
-              {props.children}
+              <SnackbarProvider>
+                {props.children}
+                <CustomSnackbar />
+              </SnackbarProvider>
             </NextAppProvider>
           </React.Suspense>
         </AppRouterCacheProvider>

@@ -1,6 +1,7 @@
 "use client";
 
 import { TaskType } from "@/types";
+import { SnackbarContext } from "@/utils/snackbarProvider";
 import {
   Button,
   CircularProgress,
@@ -22,7 +23,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
 import { Form, Formik } from "formik";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as Yup from "yup";
 import CustomTextField from "../shared/CustomTextField";
 
@@ -43,6 +44,7 @@ const validateTaskName = (value: string): string | undefined => {
 export default function EditForm() {
   const router = useRouter();
   const params = useParams();
+  const { showSnackbar } = useContext(SnackbarContext);
   const [initialValues, setInitialValues] = useState<Omit<
     TaskType,
     "id"
@@ -85,6 +87,7 @@ export default function EditForm() {
         );
         localStorage.setItem("tasks", JSON.stringify(tasks));
         router.push("/tasks");
+        showSnackbar("Task updated successfully", null, "info");
       }}
     >
       {({

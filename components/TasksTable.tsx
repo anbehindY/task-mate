@@ -1,6 +1,8 @@
 "use client";
 
 import { TaskType } from "@/types";
+import { SnackbarContext } from "@/utils/snackbarProvider";
+import { DeleteOutline } from "@mui/icons-material";
 import CheckIcon from "@mui/icons-material/Check";
 import {
   Box,
@@ -16,12 +18,13 @@ import {
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 export default function TasksTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [tasks, setTasks] = useState<TaskType[]>([]);
+  const { showSnackbar } = useContext(SnackbarContext);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -43,6 +46,7 @@ export default function TasksTable() {
     const newTasks = tasks.filter((task) => task.id !== id);
     setTasks(newTasks);
     localStorage.setItem("tasks", JSON.stringify(newTasks));
+    showSnackbar("Task deleted successfully", <DeleteOutline />, "error");
   };
 
   const markCompletedHandler = (id: number) => {
