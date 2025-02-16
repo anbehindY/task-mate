@@ -1,6 +1,6 @@
 "use client";
 
-import CreateForm from "@/components/tasks/CreateForm";
+import NewCreateForm from "@/components/tasks/NewCreateForm";
 import { PageContainer } from "@toolpad/core";
 
 export default function NewTask() {
@@ -12,8 +12,8 @@ export default function NewTask() {
         { title: "Add New Task" },
       ]}
     >
-      <section className="grid place-items-center">
-        <CreateForm />
+      <section className="grid place-items-center pb-12">
+        <NewCreateForm />
       </section>
     </PageContainer>
   );
