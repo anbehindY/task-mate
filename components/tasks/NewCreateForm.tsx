@@ -1,14 +1,31 @@
 import { SnackbarContext } from "@/components/provider/SnackbarProvider";
+import useCreateTasksMutation from "@/hooks/task/useCreateTasksMutation";
 import { TaskArrayType } from "@/types";
 import { Formik } from "formik";
 import { useRouter } from "next/navigation";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { array, date, object, string } from "yup";
 import DynamicForm from "./DynamicForm";
 
 export default function NewCreateForm() {
   const router = useRouter();
   const { showSnackbar } = useContext(SnackbarContext);
+  const CreateTaskMutation = useCreateTasksMutation();
+
+  useEffect(() => {
+    if (CreateTaskMutation.isSuccess) {
+      showSnackbar("Tasks created successfully");
+      router.push("/tasks");
+    } else if (CreateTaskMutation.isPending) {
+      showSnackbar("Creating tasks...", null, "info");
+    } else if (CreateTaskMutation.isError) {
+      showSnackbar("Error creating tasks", null, "error");
+    }
+  }, [
+    CreateTaskMutation.isSuccess,
+    CreateTaskMutation.isPending,
+    CreateTaskMutation.isError,
+  ]);
 
   const initialValues: TaskArrayType = {
     tasks: [
@@ -48,14 +65,14 @@ export default function NewCreateForm() {
       initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={(response) => {
-        const tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-        let id = tasks.length > 0 ? tasks[tasks.length - 1].id + 1 : 1;
-        response.tasks.forEach((task) => {
-          tasks.push({ id: id++, ...task });
-        });
-        localStorage.setItem("tasks", JSON.stringify(tasks));
-        router.push("/tasks");
-        showSnackbar(`Task${tasks.length > 1 ? "s" : ""} created successfully`);
+        CreateTaskMutation.mutate(
+          response.tasks.map((task) => {
+            return {
+              ...task,
+              dueDate: task.dueDate!.toISOString(),
+            };
+          })
+        );
       }}
     >
       <DynamicForm />
