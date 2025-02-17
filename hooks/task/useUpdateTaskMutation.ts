@@ -14,16 +14,20 @@ async function updateTaskMutation(
   return data;
 }
 
-export default function useUpdateTaskMutation(
-  payload: UpdateTaskPayloadType,
-  id: string
-) {
+export default function useUpdateTaskMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => updateTaskMutation(payload, id),
+    mutationKey: ["updateTask"],
+    mutationFn: ({
+      payload,
+      id,
+    }: {
+      payload: UpdateTaskPayloadType;
+      id: string;
+    }) => updateTaskMutation(payload, id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: "tasks" });
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
 }

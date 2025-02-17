@@ -13,13 +13,15 @@ async function createTasksMutation(
   return data;
 }
 
-export default function useCreateTasksMutation(payload: CreateTaskPayloadType) {
+export default function useCreateTasksMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => createTasksMutation(payload),
+    mutationKey: ["createTask"],
+    mutationFn: (payload: CreateTaskPayloadType) =>
+      createTasksMutation(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: "tasks" });
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
 }

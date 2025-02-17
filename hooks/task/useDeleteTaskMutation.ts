@@ -10,13 +10,14 @@ async function deleteTaskMutation(id: string): Promise<DeleteTaskResponseType> {
   return data;
 }
 
-export default function useDeleteTaskMutation(id: string) {
+export default function useDeleteTaskMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => deleteTaskMutation(id),
+    mutationKey: ["deleteTask"],
+    mutationFn: deleteTaskMutation,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: "tasks" });
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
 }
