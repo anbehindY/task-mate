@@ -1,6 +1,8 @@
 "use client";
 
 import { SnackbarContext } from "@/components/provider/SnackbarProvider";
+import useGetTasksQuery from "@/hooks/task/useGetTasksQuery";
+import useUpdateTaskMutation from "@/hooks/task/useUpdateTaskMutation";
 import { TaskType } from "@/types";
 import {
   Button,
@@ -47,16 +49,43 @@ export default function EditForm() {
   const { showSnackbar } = useContext(SnackbarContext);
   const [initialValues, setInitialValues] = useState<Omit<
     TaskType,
-    "id"
+    "_id" | "__v"
   > | null>(null);
+  const UpdateTaskMutation = useUpdateTaskMutation();
+  const GetTasksQuery = useGetTasksQuery();
 
   useEffect(() => {
-    const storedTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-    const { id, dueDate, ...task } = storedTasks.find(
-      (task: TaskType) => task.id === Number(params.id)
-    );
-    setInitialValues({ dueDate: dayjs(dueDate), ...task });
-  }, [params.id]);
+    if (UpdateTaskMutation.isSuccess) {
+      showSnackbar("Tasks updated successfully");
+      router.push("/tasks");
+    } else if (UpdateTaskMutation.isPending) {
+      showSnackbar("Updating tasks...", null, "info");
+    } else if (UpdateTaskMutation.isError) {
+      showSnackbar("Error updating tasks", null, "error");
+    }
+  }, [
+    UpdateTaskMutation.isSuccess,
+    UpdateTaskMutation.isPending,
+    UpdateTaskMutation.isError,
+  ]);
+
+  useEffect(() => {
+    if (GetTasksQuery.isSuccess) {
+      const task = GetTasksQuery.data.tasks.find(
+        (task) => task._id === params.id
+      );
+      if (task) {
+        setInitialValues({
+          taskName: task.taskName,
+          assignee: task.assignee,
+          dueDate: dayjs(task.dueDate),
+          priority: task.priority,
+          status: task.status,
+          completed: task.completed,
+        });
+      }
+    }
+  }, [params.id, GetTasksQuery.isSuccess, GetTasksQuery.data]);
 
   if (!initialValues) {
     return (
@@ -81,13 +110,13 @@ export default function EditForm() {
       enableReinitialize
       validationSchema={taskSchema}
       onSubmit={(response) => {
-        let tasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-        tasks = tasks.map((task: TaskType) =>
-          task.id === Number(params.id) ? { id: task.id, ...response } : task
-        );
-        localStorage.setItem("tasks", JSON.stringify(tasks));
-        router.push("/tasks");
-        showSnackbar("Task updated successfully", null, "info");
+        UpdateTaskMutation.mutate({
+          payload: {
+            ...response,
+            dueDate: response.dueDate!.toISOString(),
+          },
+          id: params.id as string,
+        });
       }}
     >
       {({
