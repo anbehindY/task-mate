@@ -1,12 +1,20 @@
 "use client";
 
 import StatsCard from "@/components/dashboard/StatsCard";
+import { SnackbarContext } from "@/components/provider/SnackbarProvider";
+import Loading from "@/components/shared/Loading";
+import useGetTasksQuery from "@/hooks/task/useGetTasksQuery";
 import { TaskType } from "@/types";
-import { Assignment, CheckCircle, PendingActions } from "@mui/icons-material";
+import {
+  Assignment,
+  CheckCircle,
+  ErrorOutline,
+  PendingActions,
+} from "@mui/icons-material";
 import { Box, Paper, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { PageContainer } from "@toolpad/core";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 export default function HomePage() {
   const [taskStats, setTaskStats] = useState({
@@ -14,18 +22,29 @@ export default function HomePage() {
     completedTasks: 0,
     pendingTasks: 0,
   });
+  const { showSnackbar } = useContext(SnackbarContext);
+  const GetTasksQuery = useGetTasksQuery();
 
   useEffect(() => {
-    const localTasks = localStorage.getItem("tasks");
-    if (localTasks) {
-      const tasks = JSON.parse(localTasks);
+    if (GetTasksQuery.isSuccess) {
+      const tasks = GetTasksQuery.data.tasks;
       setTaskStats({
         totalTasks: tasks.length,
         completedTasks: tasks.filter((task: TaskType) => task.completed).length,
         pendingTasks: tasks.filter((task: TaskType) => !task.completed).length,
       });
+    } else if (GetTasksQuery.isError) {
+      showSnackbar("Error fetching tasks", <ErrorOutline />, "error");
     }
-  }, []);
+  }, [GetTasksQuery.isSuccess, GetTasksQuery.isError]);
+
+  if (GetTasksQuery.isPending) {
+    return (
+      <PageContainer title="Dashboard" breadcrumbs={[{ title: "" }]}>
+        <Loading />
+      </PageContainer>
+    );
+  }
 
   return (
     <PageContainer title="Dashboard" breadcrumbs={[{ title: "" }]}>
