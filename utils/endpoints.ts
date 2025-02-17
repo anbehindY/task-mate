@@ -1,5 +1,7 @@
+const baseURL = "http://localhost:5000/api";
+
 const endpoints = Object.freeze({
-  tasks: "localhost:5000/api/tasks",
+  tasks: `${baseURL}/tasks`,
 });
 
 export default endpoints;
