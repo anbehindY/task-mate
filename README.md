@@ -2,12 +2,14 @@
 
 This is a task management application built on top of Next.js.
 
+<a href="https://github.com/anbehindY/task-mate-server" target="_blank">Go to Server-Application Repository</a>
+
 ## Tech Stack
 
 - Next.js
 - MUI
 - Formik
-- Local Storage
+- Tanstack Query
 
 ## Requirements
 
