@@ -1,8 +1,11 @@
 "use client";
 
 import { SnackbarContext } from "@/components/provider/SnackbarProvider";
+import useDeleteTaskMutation from "@/hooks/task/useDeleteTaskMutation";
+import useGetTasksQuery from "@/hooks/task/useGetTasksQuery";
+import useUpdateTaskMutation from "@/hooks/task/useUpdateTaskMutation";
 import { TaskType } from "@/types";
-import { DeleteOutline } from "@mui/icons-material";
+import { ErrorOutline } from "@mui/icons-material";
 import CheckIcon from "@mui/icons-material/Check";
 import {
   Box,
@@ -19,12 +22,46 @@ import {
 } from "@mui/material";
 import dayjs from "dayjs";
 import { useContext, useEffect, useState } from "react";
+import Loading from "./shared/Loading";
 
 export default function TasksTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [tasks, setTasks] = useState<TaskType[]>([]);
   const { showSnackbar } = useContext(SnackbarContext);
+  const GetAllTasksQuery = useGetTasksQuery();
+  const DeleteTaskMutation = useDeleteTaskMutation();
+  const UpdateTaskMutation = useUpdateTaskMutation();
+
+  useEffect(() => {
+    if (GetAllTasksQuery.isSuccess) {
+      setTasks(GetAllTasksQuery.data.tasks);
+    } else if (GetAllTasksQuery.isPending) {
+      showSnackbar("Fetching tasks...", null, "info");
+    } else if (GetAllTasksQuery.isError) {
+      showSnackbar("Error fetching tasks", <ErrorOutline />, "error");
+    }
+  }, [
+    GetAllTasksQuery.isSuccess,
+    GetAllTasksQuery.isPending,
+    GetAllTasksQuery.isError,
+    GetAllTasksQuery.data,
+  ]);
+
+  useEffect(() => {
+    if (DeleteTaskMutation.isSuccess) {
+      showSnackbar(DeleteTaskMutation.data.message);
+    } else if (DeleteTaskMutation.isPending) {
+      showSnackbar("Deleting task...", null, "info");
+    } else if (DeleteTaskMutation.isError) {
+      showSnackbar("Error deleting task", <ErrorOutline />, "error");
+    }
+  }, [
+    DeleteTaskMutation.isSuccess,
+    DeleteTaskMutation.isPending,
+    DeleteTaskMutation.isError,
+    DeleteTaskMutation.data,
+  ]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -37,34 +74,28 @@ export default function TasksTable() {
     setPage(0);
   };
 
-  useEffect(() => {
-    const storedTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-    setTasks(storedTasks);
-  }, []);
-
-  const deleteHandler = (id: number) => {
-    const newTasks = tasks.filter((task) => task.id !== id);
-    setTasks(newTasks);
-    localStorage.setItem("tasks", JSON.stringify(newTasks));
-    showSnackbar("Task deleted successfully", <DeleteOutline />, "error");
+  const deleteHandler = (id: string) => {
+    DeleteTaskMutation.mutate(id);
   };
 
-  const markCompletedHandler = (id: number) => {
+  const markCompletedHandler = (id: string) => {
     {
       const newTasks = tasks.map((t) => {
-        if (t.id === id) {
+        if (t._id === id) {
           if (t.completed) {
             t.completed = false;
           } else {
             t.completed = true;
           }
         }
+        UpdateTaskMutation.mutate({ payload: { completed: t.completed }, id });
         return t;
       });
       setTasks(newTasks);
-      localStorage.setItem("tasks", JSON.stringify(newTasks));
     }
   };
+
+  if (GetAllTasksQuery.isPending) return <Loading />;
 
   if (tasks.length === 0) {
     return (
@@ -92,7 +123,7 @@ export default function TasksTable() {
             {tasks
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((task) => (
-                <TableRow key={task.id} className="!text-white">
+                <TableRow key={task._id} className="!text-white">
                   <TableCell>{task.taskName}</TableCell>
                   <TableCell>{task.assignee}</TableCell>
 
@@ -106,21 +137,21 @@ export default function TasksTable() {
                     <Button
                       variant="contained"
                       color="primary"
-                      href={`/tasks/${task.id}/edit`}
+                      href={`/tasks/${task._id}/edit`}
                     >
                       Edit
                     </Button>
                     <Button
                       variant="contained"
                       color="error"
-                      onClick={() => deleteHandler(task.id)}
+                      onClick={() => deleteHandler(task._id)}
                     >
                       Delete
                     </Button>
                     <Button
                       variant={task.completed ? "outlined" : "contained"}
                       color="success"
-                      onClick={() => markCompletedHandler(task.id)}
+                      onClick={() => markCompletedHandler(task._id)}
                     >
                       {task.completed ? (
                         <Typography variant="button">
