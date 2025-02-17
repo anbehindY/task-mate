@@ -1,17 +1,17 @@
 import { Dayjs } from "dayjs";
 
 export type TaskType = {
-  id: string;
+  _id: string;
   taskName: string;
   assignee: string;
-  dueDate: string | Dayjs | null;
+  dueDate: Dayjs | null;
   priority: string;
   status: string;
   completed: boolean;
   __v: number;
 };
 
-export type TaskArrayType = { tasks: Omit<TaskType, "id">[] };
+export type TaskArrayType = { tasks: Omit<TaskType, "_id" | "__v">[] };
 
 export type StatsCardType = {
   title: string;
@@ -47,6 +47,6 @@ type TaskPayloadType = {
   completed: boolean;
 };
 
-export type CreateTaskPayloadType = TaskPayloadType;
+export type CreateTaskPayloadType = TaskPayloadType[];
 
 export type UpdateTaskPayloadType = Partial<TaskPayloadType>;
